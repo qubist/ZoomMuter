@@ -9,47 +9,64 @@
   On OSX, CMD-SHIFT-q
 */
 
-#define OSX 0
+#define MACOS 0
 #define WINDOWS 1
 #define UBUNTU 2
 
 #include "Keyboard.h"
 #include <Button.h>
 
-// change this to match your platform:
-int platform = OSX;
+// Variable to keep track of what platform the device is set for
+int platform;
 
-int mutePin = 2;
-int videoPin = 3;
+const int mutePin = 2;
+const int videoPin = 3;
+
+const int ubuntuPin = 5;
+const int windowsPin = 6;
 
 // Set up buttons, 10ms debounce
 Button muteButton(mutePin, 10); // Connect your button between pin 2 and GND
 Button videoButton(videoPin, 10); // Connect your button between pin 3 and GND
 
 void setup() {
-  // make the two button pins inputs and turn on the pull-up resistor so it goes high unless
-  // connected to ground:
+  // Begin the two buttons
   muteButton.begin();
   videoButton.begin();
 
   Keyboard.begin();
+
+  // Initialize the OS switch's two pins
+  pinMode(ubuntuPin, INPUT_PULLUP);
+  pinMode(windowsPin, INPUT_PULLUP);
+
 }
 
 void loop() {
+
+  // Check which OS mode we're on
+  if (digitalRead(ubuntuPin) == LOW) {
+    platform = UBUNTU;
+  } else if (digitalRead(windowsPin) == LOW) {
+    platform = WINDOWS;
+  } else {
+    platform = MACOS;
+  }
+  
   if (muteButton.pressed()) {
     Serial.println("mute button pressed");
-    muteUnmute();
+    muteUnmute(platform);
   }
 
   if (videoButton.pressed()) {
     Serial.println("video button pressed");
-    startStopVideo();
+    startStopVideo(platform);
   }
 }
 
-void muteUnmute() {
+void muteUnmute(int platform) {
   switch (platform) {
-    case OSX:
+    case MACOS:
       // Command-Shift-A mutes audio
       Keyboard.press(KEY_LEFT_GUI);
       Keyboard.press(KEY_LEFT_SHIFT);
@@ -58,15 +75,17 @@ void muteUnmute() {
       Keyboard.releaseAll();
       break;
     case WINDOWS:
+      // FIXME
       break;
     case UBUNTU:
+      // FIXME
       break;
   }
 }
 
-void startStopVideo() {
+void startStopVideo(int platform) {
   switch (platform) {
-    case OSX:
+    case MACOS:
       // Command-Shift-A mutes audio
       Keyboard.press(KEY_LEFT_GUI);
       Keyboard.press(KEY_LEFT_SHIFT);
@@ -75,8 +94,10 @@ void startStopVideo() {
       Keyboard.releaseAll();
       break;
     case WINDOWS:
+      // FIXME
       break;
     case UBUNTU:
+      // FIXME
       break;
   }
 }
