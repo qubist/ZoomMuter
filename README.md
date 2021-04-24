@@ -1,1 +1,1 @@
-![ZoomMuter overview](ZoomMuter.png)
+![ZoomMuter overview](images/ZoomMuter.png)
